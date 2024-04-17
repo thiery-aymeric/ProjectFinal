@@ -41,5 +41,29 @@ router.get("/Menus/:id", async function(req, rep){
     rep.json(menu); 
 })
 
+router.get("/delete-menu/:id", verifyToken ,  async function(req, rep){
+    const id = req.params.id ; 
+    const verification = isValidObjectId(id)
+    if(!verification){
+        rep.status(400).json({msg : "id invalid"});
+        return ; 
+    }
+    const menu = await Menu.findOne({_id : id})
+    if(!menu){ 
+        rep.status(404).json({msg : "article introuvable"})
+        return ; 
+    }
+    await Menu.deleteOne({_id : id})
+    const allMenus = await Menu.find().sort({ dt_publication: -1 });
+    rep.json(allMenus) ;  //une fois que j'ai réussi à supprimer mon menu 
+    // node me retourne l'ensemble des menus présents en base de données
+})
+
+router.post("/update-article/:id", verifyToken , validMenu ,async function(req, rep){
+    const id = req.params.id ;
+    const body = req.article ; 
+    const reponse = await Menu.updateOne({_id : id},{$set : body}, {$new : true });
+    rep.json(reponse);
+})
 
 export default router ; 

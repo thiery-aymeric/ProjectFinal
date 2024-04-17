@@ -62,6 +62,7 @@ router.post("/login", async function(req, rep){
     rep.json({ msg : "bienvenue" , token  }); 
 })
 
+// recupere un ou les utilisateurs
 router.get("/users" , async function(req, rep){
     const user = await User.find().sort({ dt_publication: -1 });
     rep.json(user); 
@@ -82,4 +83,29 @@ router.get("/users/:id", async function(req, rep){
     rep.json(user); 
 })
 
+//modification ou suppression d'un utilisateur
+router.get("/delete-user/:id", verifyToken ,  async function(req, rep){
+    const id = req.params.id ; 
+    const verification = isValidObjectId(id)
+    if(!verification){
+        rep.status(400).json({msg : "id invalid"});
+        return ; 
+    }
+    const user = await User.findOne({_id : id})
+    if(!user){ 
+        rep.status(404).json({msg : "article introuvable"})
+        return ; 
+    }
+    await User.deleteOne({_id : id})
+    const allUsers = await User.find().sort({ dt_publication: -1 });
+    rep.json(allUsers) ;  //une fois que j'ai réussi à supprimer mon article 
+    // node me retourne l'ensemble des articles présents en base de données
+})
+
+router.post("/update-article/:id", verifyToken , validUser ,async function(req, rep){
+    const id = req.params.id ;
+    const body = req.article ; 
+    const reponse = await User.updateOne({_id : id},{$set : body}, {$new : true });
+    rep.json(reponse);
+})
 export default router ; 

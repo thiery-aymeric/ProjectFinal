@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const verifyToken = (req, res, next) => {
     const token = req.header('Authorization'); // Récupérer le JWT de l'en-tête
 
-    //si l'entête n'est pas présente, on renvoi un message d'erreur
+    //si le token n'est pas présente, on renvoi un message d'erreur
     if (!token) {
       return res.status(401).json({  msg: 'Token manquant. Authentification requise.' });
     }

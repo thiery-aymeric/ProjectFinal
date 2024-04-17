@@ -26,12 +26,6 @@ app.use("/" , routerMenu);
 app.use("/" , routerlivre_d_or);
 
 
-
-
-
-
-
-
 app.listen(PORT , function(){
     console.log(`server express écoute sur le port ${PORT}`);
 })
